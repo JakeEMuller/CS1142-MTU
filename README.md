@@ -1,1 +1,1 @@
-MIPS Assemle Code
+MIPS Assembly Code
