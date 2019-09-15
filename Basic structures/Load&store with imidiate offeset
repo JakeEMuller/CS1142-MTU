@@ -1,0 +1,10 @@
+# Add the first two elelments of an array, store in third element 
+# Uses immediate values to change element being loaded or stored
+
+		.text
+		lw $t1, nums
+		
+		lw $t2, nums+4
+		
+		.data
+nums:	.word 123, 456, 0 # array of 3 words, starts at label nums

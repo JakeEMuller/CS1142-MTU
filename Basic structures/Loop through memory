@@ -1,0 +1,24 @@
+
+	.text
+	li $t0, 123	# value
+	li $t1, 0  	# i
+	li $t2, 10	
+	
+loop:
+	bge $t1, $t2, done
+	
+# Conver i to byte offset, multiply by 4
+	add $t3, $t1, $t1
+	add $t3, $t3, $t3
+	
+	sw $t0, nums($t3)
+	
+	addi $t1, $t1, 1
+	b loop
+
+done:
+
+	.data
+	.align 2 #2^2 = 4 word allignment
+nums:
+	.space 40 # array of 10 (4 bytes/word)

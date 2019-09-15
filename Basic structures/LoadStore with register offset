@@ -1,0 +1,15 @@
+# Offset stored in a register
+
+		.text
+		li $t0, 0
+		lw $t1, nums($t0)
+		
+		add $t0, $t0, 4
+		lw $t2, nums($t0)
+		
+		add $t3, $t1, $t2
+		add $t0, $t0, 4
+		sw $t3, nums($t0)
+		
+		.data
+nums:   .word 123, 456, 0

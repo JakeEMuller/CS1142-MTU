@@ -1,0 +1,10 @@
+li $t0, 0 
+li $t1, 1
+li $t2, 5
+
+loop:
+	bgt $t1, $t2, done
+	add $t0, $t0, $t1
+	addi $t1, $t1, 1
+	b loop
+done:
