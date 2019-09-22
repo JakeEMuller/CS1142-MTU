@@ -1,8 +1,10 @@
 #------------------------------------------------------
 # Jake Muller
+# Jemller
 # Vector Sum 
 # 9/20/19
 # Takes in a number of vectors and adds them together
+# using arrays and incrementing through specific bytes
 #------------------------------------------------------
 .text
 #------------------------------------------------------
