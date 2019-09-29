@@ -84,44 +84,43 @@ strUpdate:	.asciiz "Update : "
 # Prints the part number, description, and quantity
 # of a given node in the list. Example output: 
 #  "#955288 Buzz Lightyear (21)"
-# Parameters : $a0 - address of node to print
+# Parameters : $a1 - address of node to print
 # Returns    : n/a
 ############################################################
 printNode:
 			
 			la $a1, first
-			move $s0, $ra  #move the return register to $s0
+			move $s0, $ra   #move the return register to $s0
 		
 			jal PrintPart	#print the part specs
 			
-			jr		$s0	 #Return to the begininng
+			jr		$s0	    #Return to the begininng
 						
 ############################################################
 # Prints list of items from given starting node in null 
 # terminated linked list. Each node is printed via printNode
 # procedure. Items separated by a comma and space.
 #  
-# Parameters : $a0 - address of node to start printing from
+# Parameters : $a1 - address of node to start printing from
 # Returns    : n/a
 ############################################################
 printList:
+			li $t7, -1	  #have $t7 as -1
 			move $s3, $ra # Move the return register to $s3
+			
 			#print first item
-			la $a1, first
+			la $a1, first # saves address of first element
+			
+			
+	Loop:
 			jal PrintPart
+			lw  $a1, 0($a1)	#get next item address
+			beq	$a1, $t7, End
 			jal PrintComma
 			jal PrintSpace
-			
-			#print second item
-			lw $a1, 0($a1)     #get second item
-			jal PrintPart
-			jal PrintComma
-			jal PrintSpace
-			
-			#print thrid item
-			lw $a1, 0($a1)		 #get next node
-			jal PrintPart
-			
+			b Loop
+	
+	End:
 			jr 		  	$s3 #return
 
 ############################################################
@@ -135,12 +134,25 @@ printList:
 # Returns    : $v0 - new quantity, -1 if item not found
 ############################################################
 updateItem:
-			li			$v0, -1
-			jr			$ra
+			li $t7, -1					#have negative 1 on standby
+	UpdateLoop:	
+			lw	$t1, 4($a0)				#grab part number		
+			beq $t1, $a1, AddtoQuantity #go to add to number
+			lw  $a0, 0($a0) 			#get next node address
+			bne $a0, $t7, UpdateLoop
+			
+			li $v0, -1					# in part is not found return -1
+			jr			$ra				# return to update
+			
+AddtoQuantity:		
+			lw $t2, 8($a0)	    		# get current quantity
+			add $t3, $a2, $t2			# put new value into $t3
+			add $v0, $0, $t3			# set return value as added value
+			sw, $t3, 8($a0)				# store new value into quantity
+			jr $ra 						# return to update
 			
 			
 			
-
 
 	
 ### START DATA ###
@@ -194,11 +206,6 @@ PrintPart: #input $a1 as the address of label
 			
 			jr $s1	#return
 		
-
-
-
-
-
 #-----------------------------------------------------------
 # Print Common Items
 #-----------------------------------------------------------
