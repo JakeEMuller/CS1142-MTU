@@ -109,7 +109,7 @@ printList:
 			move $s3, $ra # Move the return register to $s3
 			
 			#print first item
-			la $a1, first # saves address of first element
+			move $a1, $a0 # saves address of first element
 			
 			
 	Loop:
@@ -147,11 +147,15 @@ updateItem:
 AddtoQuantity:		
 			lw $t2, 8($a0)	    		# get current quantity
 			add $t3, $a2, $t2			# put new value into $t3
+			blt $t3, $0, SetToZero
 			add $v0, $0, $t3			# set return value as added value
 			sw, $t3, 8($a0)				# store new value into quantity
 			jr $ra 						# return to update
 			
-			
+SetToZero:
+			li $v0, 0
+			sw, $0, 8($a0)
+			jr $ra		
 			
 
 	
