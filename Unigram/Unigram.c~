@@ -1,0 +1,230 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+
+// We assue all words are no more than 63 characters long.
+// This requires 64 characters in any array that holds a word since we need 1 for null.
+// Instead of sprinkling the magic number 64 everywhere in your code, you should instead
+// use the following constant:
+#define WORD_ARRAY_SIZE 64
+
+// Function prototypes, this allows the function implementations to appear in any order in the file
+// You will be implementing these three functions.
+unsigned int hashString(char* str);
+double calcUnigramLogProb(unsigned int count, unsigned long total);
+void stripUpper(char* str);
+
+// Function prototypes for the test functions we have provided
+void testHashString();
+void testCalcUnigramLogProb();
+void testStripUpper();
+
+// Hash a null-terminated string to an unsigned int.
+// Implement as in Java's hashCode for String s, calculates this equation:
+//   s[0]*31^(n-1) + s[1]*31^(n-2) + ... + s[n-1]  (^ denotes exponentiation)
+//
+// You can follow the Java source code in this discussion: http://tinyurl.com/pqg2al5
+//
+// NOTE: While the above equation uses exponentiation, it is quite expensive and
+// unnecessary to call the pow() function for each character. Also you will not get
+// the same answer as us for long strings. You can do the calculation using only
+// multiplication and addition. HINT: Can you reorder the calculation?
+unsigned int hashString(char* str)
+{
+   // TODO: replace with your code
+  unsigned int hash = 0;
+  int size = strlen(str);
+  for(int i = 0; i < size; i++){
+    hash = 31*hash + str[i]; 
+  }
+
+  return hash;
+}
+
+// Calculate log probability of a word occurring count times in total words of data.
+// Result is in log base 10.
+double calcUnigramLogProb(unsigned int count, unsigned long total)
+{
+   // TODO: replace with your code
+  double result = 0;
+  result = log10(count) - log10(total);
+  return result;
+}
+
+// Strip the null-terminated string str of characters that aren't letters or apostrophe.
+// Converts all lowercase letters to uppercase.
+// This operates in place on the string str.
+void stripUpper(char* str)
+{
+   // NEEDS TO STRIP NON-LETERS
+  char newStr[strlen(str)];
+  int newStrIndex = 0;
+  int length = strlen(str);
+  for(int i = 0; i < length; i++){
+    if(str[i] >= 'A' && str[i] <= 'Z'){
+      newStr[newStrIndex] = str[i];
+      newStrIndex++;
+    }else if(str[i] >= 'a' && str[i] <= 'z'){
+      newStr[newStrIndex] = str[i] - 32;
+      newStrIndex++;
+    }else if(str[i] == 39){
+      newStr[newStrIndex] = str[i];
+      newStrIndex++;
+    }
+  
+  }
+  newStr[newStrIndex] = '\0';
+  
+  strcpy(str, newStr);
+}
+
+// Test function for the hashString function.
+// Do NOT change this function.
+void testHashString()
+{
+   char tests[][WORD_ARRAY_SIZE] = {"BAD", "DAB", "GOODFELLOWS", "WRITERSHIP", "a", "A", "abcdefghijklmnopqrstuvwxyz", "1234567890!@#$%^&*()", ""};
+
+   int i = 0;
+   while (strlen(tests[i]) > 0)
+   {
+      printf("\"%s\" -> %u\n", tests[i], hashString(tests[i]));
+      i++;
+   }
+}
+
+// Test function for the calcUnigramLogProb function.
+// Do NOT change this function.
+void testCalcUnigramLogProb()
+{
+   const int SIZE = 8;
+   unsigned int  counts[] = { 5 ,  50 ,   1,    1,   1234,   0 , 100 , 1};
+   unsigned long totals[] = {10 , 100 , 100, 2000, 567890, 123 , 100 , 1};
+   
+   for (int i = 0; i < SIZE; i++)
+   {
+      printf("%5u %7lu -> %9.6f\n", counts[i], totals[i], calcUnigramLogProb(counts[i], totals[i]));
+   }
+}
+
+// Test function for the stripUpper function.
+// Do NOT change this function.
+void testStripUpper()
+{
+   char tests[][WORD_ARRAY_SIZE] = {"bad", "BAD", "BaD", "CAN'T", "well-done", "!L00K-", "1234567890", ""};
+   
+   int i = 0;
+   while (strlen(tests[i]) > 0)
+   {
+      printf("\"%s\" -> ", tests[i]);
+      stripUpper(tests[i]);
+      printf("\"%s\" (len %zu)\n", tests[i], strlen(tests[i]));
+      i++;
+   }
+}
+
+int main(int argc, char** argv)
+{
+   // If no command line input we print out a help message and also run test functions
+   if (argc <= 1)
+   {
+      printf("Usage: Unigram <hash table size> [debug]\n\n");
+      testHashString();
+      printf("\n");
+      testCalcUnigramLogProb();
+      printf("\n");
+      testStripUpper();
+      return 0;
+   }
+
+   int HashTableSize = atoi(argv[1]);
+   int debug = 0;
+   if(argc > 2){
+     debug = atoi(argv[2]);
+   }
+
+   if(HashTableSize < 0){
+     printf("Table size must be positive!\n");
+     return 0;
+   }
+   char* nullStr = "\0";
+   char buckets[HashTableSize][64];
+   int counts[HashTableSize];
+   char reading[64];
+   strcpy(reading, nullStr);
+   //clear buckets and count
+   for(int i = 0; i < HashTableSize; i++){
+     strcpy(buckets[i], nullStr);
+     counts[i] = 0;
+     }
+  
+
+
+   //read in values and insert them withing buckets 
+
+   
+   int total = 0;
+   // printf("just before big loop\n");
+   while( scanf("%63s", reading) == 1 ){
+   
+     unsigned int hash = 0;
+     int bucket = 0;
+     //scan in value
+     
+      stripUpper(reading); //make upper case
+   
+      if(strcmp(reading, nullStr) != 0){
+      
+       hash = hashString(reading); //get hash value
+       bucket = ( hash % HashTableSize ); //get bucket value
+     
+       
+
+       //check if bucket is occupied and deal with it
+       int origBucket = bucket;
+       
+       //------------------------------------------
+       // NEEDS TO BE include overload case
+       //------------------------------------------
+       while( strcmp(reading, buckets[bucket]) != 0 && strcmp(buckets[bucket], nullStr) != 0 ){
+	 bucket++;
+	 if(bucket > HashTableSize){
+	   bucket = 0;
+	 }else if(bucket == origBucket){
+	   printf("ERROR: hash table is full! \n");
+	   return 0;
+	 }
+	 
+       }
+
+       //-----------------------------------------
+       // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+       //-----------------------------------------
+
+       //fill in bucket and increment count
+       strcpy(buckets[bucket], reading); //copy string into bucket
+
+       counts[bucket]++; //incrament count
+       total++;
+     
+       //second debug statement
+        if(debug != 0){
+	  printf("%s -> hash %u, bucket %d, ", reading, hash, origBucket);
+	  printf("stored at %d, count %d \n", bucket, counts[bucket]);
+	}
+     }
+      strcpy(reading, nullStr);
+   }
+   
+   //calculate Log occurance and print them
+   double prob = 0;
+   for(int i = 0; i < HashTableSize; i++){
+     if( strcmp(buckets[i], nullStr) ){
+       prob = calcUnigramLogProb(counts[i], total);
+       printf("%.6lf %s \n", prob, buckets[i]);
+     }
+   }
+
+
+   return 0;
+}

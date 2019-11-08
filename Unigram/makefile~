@@ -1,0 +1,2 @@
+Unigram: Unigram.c
+	gcc -g -std=c99 -pedantic -Wall -Wextra  Unigram.c -o UnigramTest -lm
